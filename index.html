@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth scroll-pt-24 bg-stone-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeBrew | Artisan Coffee Roasters</title>
+    <meta name="description" content="Experience the finest single-origin beans, roasted to perfection. LuxeBrew — Premium Artisan Coffee.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>coffee</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], playfair: ['Playfair Display', 'serif'] } } }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0c0a09; }
+        ::-webkit-scrollbar-thumb { background: #292524; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d97706; }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.75s cubic-bezier(0.25, 1, 0.5, 1), transform 0.75s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { transition: none; opacity: 1; transform: none; }
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+
+        @keyframes subtlePulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.5; } }
+        .bg-pulse { animation: subtlePulse 10s ease-in-out infinite; }
+
+        #toast-container {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            z-index: 200; display: flex; flex-direction: column; align-items: center;
+            gap: 0.5rem; pointer-events: none;
+        }
+        .toast {
+            background: #1c1917; border: 1px solid #292524; color: #e7e5e4;
+            padding: 0.75rem 1.5rem; border-radius: 9999px; font-size: 0.8rem;
+            letter-spacing: 0.08em; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease; white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { border-color: #10b981; color: #6ee7b7; }
+        .toast.error { border-color: #ef4444; color: #fca5a5; }
+    </style>
+</head>
+<body class="bg-stone-950 text-stone-300 font-sans selection:bg-amber-500 selection:text-stone-900 overflow-x-hidden">
+
+    <div id="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <nav role="navigation" aria-label="Main navigation"
+        class="fixed w-full top-0 z-[100] bg-stone-950/80 backdrop-blur-xl px-6 md:px-12 py-5 flex justify-between items-center border-b border-stone-800/30">
+        <a href="#" class="text-2xl font-playfair font-bold text-white tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded">
+            Luxe<span class="text-amber-500">Brew</span>
+        </a>
+        <ul class="hidden md:flex gap-10 list-none" role="list">
+            <li><a href="#shop" class="relative py-1 text-xs font-semibold tracking-[0.2em] uppercase text-stone-400 hover:text-amber-500 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-amber-500 after:transition-all after:duration-300 hover:after:w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded transition duration-300">Shop</a></li>
+            <li><a href="#story" class="relative py-1 text-xs font-semibold tracking-[0.2em] uppercase text-stone-400 hover:text-amber-500 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-amber-500 after:transition-all after:duration-300 hover:after:w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded transition duration-300">Our Story</a></li>
+            <li><a href="#contact" class="relative py-1 text-xs font-semibold tracking-[0.2em] uppercase text-stone-400 hover:text-amber-500 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-amber-500 after:transition-all after:duration-300 hover:after:w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded transition duration-300">Contact</a></li>
+            <li><a href="#FAQ" class="relative py-1 text-xs font-semibold tracking-[0.2em] uppercase text-stone-400 hover:text-amber-500 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-amber-500 after:transition-all after:duration-300 hover:after:w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded transition duration-300">FAQ</a></li>
+        </ul>
+        </ul>
+        <button id="cart-btn"
+            class="relative text-stone-300 hover:text-amber-500 transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded p-1"
+            aria-label="Open cart" aria-expanded="false" aria-controls="cart-drawer">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <span id="cart-badge" class="absolute -top-2 -right-2 bg-amber-500 text-stone-950 text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-transform duration-300 hidden" aria-label="items in cart">0</span>
+        </button>
+    </nav>
+
+    <main>
+        <section aria-label="Hero" class="relative w-full h-screen flex items-center overflow-hidden">
+            <div class="absolute inset-0 z-0" aria-hidden="true">
+                <img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=1920&auto=format&fit=crop"
+                    alt="" class="w-full h-full object-cover bg-pulse" fetchpriority="high">
+                <div class="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950/90 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent"></div>
+            </div>
+            <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full flex flex-col items-start">
+                <p class="reveal text-amber-500 font-semibold tracking-[0.3em] uppercase mb-4 text-xs md:text-sm">Artisan Roasters</p>
+                <h1 class="reveal text-6xl md:text-8xl font-playfair font-bold text-white leading-tight mb-6 max-w-2xl" style="transition-delay:120ms">
+                    Awaken <span class="text-amber-500 italic">Your</span><br>Senses.
+                </h1>
+                <p class="reveal text-lg md:text-xl text-stone-400 max-w-md mb-10 leading-relaxed" style="transition-delay:240ms">
+                    Experience the finest single-origin beans, roasted to perfection. Delivered fresh to your door.
+                </p>
+                <div class="reveal flex flex-col sm:flex-row gap-5" style="transition-delay:360ms">
+                    <a href="#shop" class="bg-amber-600 hover:bg-amber-500 text-stone-950 px-10 py-4 rounded-full text-sm font-bold tracking-[0.2em] uppercase transition duration-300 hover:-translate-y-1 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400">Shop Collection</a>
+                    <a href="#story" class="border border-stone-600/50 backdrop-blur-sm text-stone-300 hover:text-white hover:border-stone-400 hover:bg-white/5 px-10 py-4 rounded-full text-sm font-bold tracking-[0.2em] uppercase transition duration-300 hover:-translate-y-1 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400">Our Story</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="shop" aria-labelledby="shop-heading" class="py-32 px-6 md:px-12 bg-stone-950">
+            <div class="max-w-7xl mx-auto">
+                <header class="reveal flex flex-col items-center text-center mb-20">
+                    <p class="text-amber-500 font-semibold tracking-[0.2em] uppercase mb-2 text-xs">Our Collection</p>
+                    <h2 id="shop-heading" class="text-4xl md:text-5xl font-playfair font-bold text-white">Signature Roasts</h2>
+                    <div class="w-16 h-[2px] bg-amber-500 mt-6" aria-hidden="true"></div>
+                </header>
+                <ul class="grid grid-cols-1 md:grid-cols-3 gap-10 list-none" id="product-grid" role="list"></ul>
+            </div>
+        </section>
+
+        <section id="story" aria-labelledby="story-heading" class="py-32 px-6 md:px-12 bg-stone-950 border-t border-stone-900">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-center">
+                <div class="reveal relative group">
+                    <div class="absolute -inset-0 border border-amber-500/20 rounded-2xl translate-x-4 translate-y-4 md:translate-x-8 md:translate-y-8 transition duration-700 group-hover:translate-x-3 group-hover:translate-y-3" aria-hidden="true"></div>
+                    <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1000&auto=format&fit=crop"
+                        loading="lazy" alt="Artisan coffee being roasted in our London roastery"
+                        class="relative z-10 w-full aspect-square object-cover rounded-2xl shadow-2xl grayscale group-hover:grayscale-0 transition duration-1000">
+                </div>
+                <div class="reveal flex flex-col items-start space-y-6" style="transition-delay:200ms">
+                    <div>
+                        <p class="text-amber-500 font-semibold tracking-[0.3em] uppercase mb-4 text-xs">Our Philosophy</p>
+                        <h2 id="story-heading" class="text-4xl md:text-6xl font-playfair font-bold text-white leading-tight">Roasted with<br><span class="text-amber-400">Obsession.</span></h2>
+                    </div>
+                    <p class="text-stone-400 text-lg leading-loose">Every LuxeBrew roast begins months before the beans arrive. We travel to the mountain farms of Ethiopia and the shaded valleys of Panama, building relationships with smallholder farmers who share our uncompromising standards.</p>
+                    <p class="text-stone-400 text-lg leading-loose">Back in our London roastery, we roast in small batches of just 10kg on a vintage cast-iron drum, ensuring every bean is developed with surgical precision.</p>
+                    <div class="h-[1px] w-14 bg-amber-500" aria-hidden="true"></div>
+                    <blockquote class="border-l border-amber-500/50 pl-6">
+                        <p class="text-stone-300 text-lg leading-relaxed font-playfair italic">"We don't roast coffee. We preserve the memory of a place, a season, a farmer's life's work in every single cup."</p>
+                        <footer class="text-stone-500 text-sm mt-3 uppercase tracking-widest font-semibold not-italic">— James Caldwell, Head Roastmaster</footer>
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" aria-labelledby="contact-heading" class="py-24 px-6 md:px-12 bg-stone-900 border-t border-stone-800">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
+                <div class="reveal">
+                    <p class="text-amber-500 font-semibold tracking-[0.3em] uppercase mb-4 text-xs">Inner Circle</p>
+                    <h2 id="contact-heading" class="text-3xl md:text-4xl font-playfair font-bold text-white mb-4">Join the VIP Club</h2>
+                    <p class="text-stone-400 mb-8 text-sm leading-relaxed">Access exclusive pre-release roasts, private tastings, and members-only pricing. We send no more than two emails per month — only when something truly exceptional is ready.</p>
+                    <form id="subscribe-form" novalidate class="flex flex-col gap-4">
+                        <div>
+                            <label for="name-input" class="sr-only">Full Name</label>
+                            <input id="name-input" type="text" name="name" placeholder="Full Name" autocomplete="name" required
+                                class="w-full bg-stone-950 border border-stone-800 text-stone-300 px-6 py-4 rounded-xl focus:outline-none focus-visible:border-amber-500/70 transition duration-300 placeholder:text-stone-600">
+                        </div>
+                        <div>
+                            <label for="email-input" class="sr-only">Email Address</label>
+                            <input id="email-input" type="email" name="email" placeholder="Email Address" autocomplete="email" required
+                                class="w-full bg-stone-950 border border-stone-800 text-stone-300 px-6 py-4 rounded-xl focus:outline-none focus-visible:border-amber-500/70 transition duration-300 placeholder:text-stone-600">
+                        </div>
+                        <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-stone-950 px-8 py-4 rounded-xl font-bold tracking-[0.2em] uppercase text-xs transition duration-300 mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400">
+                            Request Membership
+                        </button>
+                    </form>
+                </div>
+                <address class="reveal flex flex-col md:border-l border-stone-800/50 md:pl-16 py-4 not-italic" style="transition-delay:200ms">
+                    <p class="text-amber-500 font-semibold tracking-[0.3em] uppercase mb-4 text-xs">Find Us</p>
+                    <h2 class="text-3xl md:text-4xl font-playfair font-bold text-white mb-8">Visit the Roastery</h2>
+                    <div class="mb-6">
+                        <h3 class="text-stone-300 font-bold mb-2 uppercase tracking-widest text-xs">London Flagship</h3>
+                        <p class="text-stone-500 text-sm leading-relaxed">47 Bermondsey Street<br>London, SE1 3XT<br>United Kingdom</p>
+                    </div>
+                    <div class="mb-6">
+                        <h3 class="text-stone-300 font-bold mb-2 uppercase tracking-widest text-xs">Hours</h3>
+                        <p class="text-stone-500 text-sm leading-relaxed">Mon – Fri: 7:30am – 6:00pm<br>Sat: 8:00am – 5:00pm<br>Sun: 9:00am – 3:00pm</p>
+                    </div>
+                    <div>
+                        <h3 class="text-stone-300 font-bold mb-2 uppercase tracking-widest text-xs">Get in Touch</h3>
+                        <a href="javascript:void(0)" class="block text-stone-500 text-sm leading-relaxed hover:text-amber-500 transition focus-visible:outline-none focus-visible:text-amber-500">hello@luxebrew.co</a>
+                        <a href="javascript:void(0)" class="block text-stone-500 text-sm leading-relaxed hover:text-amber-500 transition focus-visible:outline-none focus-visible:text-amber-500">+44 (0) 20 7946 0321</a>
+                    </div>
+                </address>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-950 pt-16 pb-8 px-6 md:px-12 border-t border-stone-900">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 reveal">
+        <a href="javascript:void(0)" class="text-xl font-playfair font-bold text-white tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded">
+            Luxe<span class="text-amber-500">Brew</span>
+        </a>
+        
+        <nav aria-label="Footer navigation">
+            <ul class="flex flex-wrap justify-center gap-8 list-none" role="list">
+                <li><a href="javascript:void(0)" class="text-xs font-semibold tracking-[0.2em] uppercase text-stone-500 hover:text-amber-500 transition">Instagram</a></li>
+                <li><a href="javascript:void(0)" class="text-xs font-semibold tracking-[0.2em] uppercase text-stone-500 hover:text-amber-500 transition">Twitter</a></li>
+                <li><a href="javascript:void(0)" class="text-xs font-semibold tracking-[0.2em] uppercase text-stone-500 hover:text-amber-500 transition">Privacy</a></li>
+                <li><a href="javascript:void(0)" class="text-xs font-semibold tracking-[0.2em] uppercase text-stone-500 hover:text-amber-500 transition">Terms</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="max-w-7xl mx-auto mt-10 text-center md:text-left text-stone-700 text-xs tracking-wider border-t border-stone-800/40 pt-8 reveal" style="transition-delay:100ms">
+        <p>&copy; <span id="year"></span> LuxeBrew Roasters. Built by Hayk Shirinyan.</p>
+        <p class="mt-2 text-stone-600 italic">Concept project created for portfolio to demonstrate UI/UX and JavaScript skills.</p>
+    </div>
+</footer>
+
+    <div id="cart-overlay" class="fixed inset-0 bg-stone-950/60 backdrop-blur-sm z-[110] hidden opacity-0 transition-opacity duration-500" aria-hidden="true"></div>
+
+    <div id="cart-drawer" role="dialog" aria-modal="true" aria-label="Shopping cart"
+        class="fixed top-0 right-0 h-full w-full md:w-[400px] bg-stone-900/90 backdrop-blur-2xl z-[120] transform translate-x-full transition-transform duration-500 ease-out shadow-2xl border-l border-stone-700/50 flex flex-col">
+        <div class="p-6 border-b border-stone-800/50 flex justify-between items-center">
+            <h2 class="text-xl font-playfair font-bold text-white">Your Bag</h2>
+            <button id="close-cart" class="text-stone-400 hover:text-amber-500 transition duration-300 hover:rotate-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded p-1" aria-label="Close cart">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div id="cart-items" class="p-6 flex-grow overflow-y-auto" aria-live="polite"></div>
+        <div class="p-6 border-t border-stone-800/50 bg-stone-950/50 flex flex-col gap-3">
+            <div class="flex justify-between text-white font-bold mb-4 text-lg">
+                <span>Total</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button id="checkout-btn" class="w-full bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold py-4 rounded-xl uppercase tracking-[0.2em] text-xs transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400">
+                Proceed to Checkout
+            </button>
+            <button id="continue-btn" class="w-full bg-transparent border border-stone-700 hover:border-stone-500 hover:bg-stone-800/50 text-white font-bold py-4 rounded-xl uppercase tracking-[0.2em] text-xs transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400">
+                Continue Shopping
+            </button>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        'use strict';
+
+        const STORAGE_KEY = 'luxebrew-cart';
+
+        const PRODUCTS = [
+            { id: 1, name: 'Ethiopia Yirgacheffe', notes: 'Floral, Citrus, Sweet',        price: 18, img: 'https://images.pexels.com/photos/2775862/pexels-photo-2775862.jpeg' },
+            { id: 2, name: 'Colombia Supremo',     notes: 'Caramel, Nutty, Smooth',      price: 21, img: 'https://images.pexels.com/photos/4109744/pexels-photo-4109744.jpeg' },
+            { id: 3, name: 'Midnight Espresso',    notes: 'Dark Cocoa, Bold, Rich',      price: 24, img: 'https://images.pexels.com/photos/129207/pexels-photo-129207.jpeg' },
+            { id: 4, name: 'Costa Rica Tarrazu',   notes: 'Honey, Green Apple, Bright',  price: 20, img: 'https://images.unsplash.com/photo-1553698249-0e3f9263ffa4?w=800&auto=format&fit=crop&q=80' },
+            { id: 5, name: 'Sumatra Mandheling',   notes: 'Earthy, Herbal, Full-bodied', price: 22, img: 'https://plus.unsplash.com/premium_photo-1672865362625-af81818fe644?w=800&auto=format&fit=crop&q=80' },
+            { id: 6, name: 'Swiss Water Decaf',    notes: 'Smooth, Cocoa, Caffeine-Free',price: 19, img: 'https://images.unsplash.com/photo-1595434091143-b375ced5fe5c?w=800&auto=format&fit=crop&q=80' }
+        ];
+
+        let cartItems = loadCart();
+        const getTotal = () => cartItems.reduce((sum, item) => sum + item.price, 0);
+
+        function loadCart() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+            catch { return []; }
+        }
+        function persistCart() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems)); }
+            catch { /* private mode or storage full */ }
+        }
+
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'default', duration = 3000) {
+            const el = document.createElement('div');
+            el.className = 'toast ' + type;
+            el.textContent = message;
+            toastContainer.appendChild(el);
+            requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+            setTimeout(() => {
+                el.classList.remove('show');
+                el.addEventListener('transitionend', () => el.remove(), { once: true });
+            }, duration);
+        }
+
+        const cartDrawer  = document.getElementById('cart-drawer');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const cartBadge   = document.getElementById('cart-badge');
+        const cartItemsEl = document.getElementById('cart-items');
+        const cartTotalEl = document.getElementById('cart-total-price');
+        const cartBtn     = document.getElementById('cart-btn');
+
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function renderCart() {
+            const count = cartItems.length;
+            cartBadge.textContent = count;
+            cartBadge.classList.toggle('hidden', count === 0);
+            cartBadge.setAttribute('aria-label', count + ' item' + (count !== 1 ? 's' : '') + ' in cart');
+            cartTotalEl.textContent = '$' + getTotal().toFixed(2);
+
+            if (count === 0) {
+                cartItemsEl.innerHTML = '<p class="text-stone-500 text-center mt-10 text-sm">Your bag is currently empty.</p>';
+                return;
+            }
+
+            cartItemsEl.innerHTML = cartItems.map(function(item, index) {
+                return '<article class="flex gap-4 mb-6 relative pr-8">' +
+                    '<img src="' + escapeHTML(item.img) + '" alt="' + escapeHTML(item.name) + ' coffee" class="w-20 h-24 object-cover rounded-xl border border-stone-700/50 shadow-md" loading="lazy">' +
+                    '<div class="flex flex-col justify-center">' +
+                        '<h3 class="text-white font-bold font-playfair text-base leading-tight">' + escapeHTML(item.name) + '</h3>' +
+                        '<p class="text-stone-500 text-xs tracking-widest uppercase mb-2 mt-1">Whole Bean</p>' +
+                        '<p class="text-amber-500 font-bold">$' + item.price + '.00</p>' +
+                    '</div>' +
+                    '<button class="remove-btn absolute top-2 right-0 text-stone-600 hover:text-red-500 transition duration-300 hover:rotate-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded p-1" data-index="' + index + '" aria-label="Remove ' + escapeHTML(item.name) + ' from cart">' +
+                        '<svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
+                    '</button>' +
+                '</article>';
+            }).join('');
+        }
+
+        cartItemsEl.addEventListener('click', function(e) {
+            const btn = e.target.closest('.remove-btn');
+            if (!btn) return;
+            const removed = cartItems.splice(Number(btn.dataset.index), 1)[0];
+            persistCart();
+            renderCart();
+            showToast(removed.name + ' removed from bag', 'error');
+        });
+
+        let lastFocused = null;
+
+        function openCart() {
+            lastFocused = document.activeElement;
+            cartDrawer.classList.remove('translate-x-full');
+            cartOverlay.classList.remove('hidden');
+            requestAnimationFrame(() => cartOverlay.classList.remove('opacity-0'));
+            document.body.style.overflow = 'hidden';
+            cartBtn.setAttribute('aria-expanded', 'true');
+            document.getElementById('close-cart').focus();
+        }
+
+        function closeCart() {
+            cartDrawer.classList.add('translate-x-full');
+            cartOverlay.classList.add('opacity-0');
+            cartOverlay.addEventListener('transitionend', () => cartOverlay.classList.add('hidden'), { once: true });
+            document.body.style.overflow = '';
+            cartBtn.setAttribute('aria-expanded', 'false');
+            if (lastFocused) lastFocused.focus();
+        }
+
+        cartBtn.addEventListener('click', openCart);
+        document.getElementById('close-cart').addEventListener('click', closeCart);
+        document.getElementById('continue-btn').addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', closeCart);
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !cartDrawer.classList.contains('translate-x-full')) closeCart();
+        });
+
+        document.getElementById('checkout-btn').addEventListener('click', function() {
+            if (cartItems.length === 0) { showToast('Your bag is empty!', 'error'); return; }
+            showToast('Redirecting to secure checkout...', 'default');
+            setTimeout(closeCart, 1000);
+        });
+
+        const productGrid = document.getElementById('product-grid');
+        productGrid.innerHTML = PRODUCTS.map(function(p, i) {
+            return '<li class="reveal group" style="transition-delay:' + (i * 100) + 'ms" data-id="' + p.id + '" data-name="' + escapeHTML(p.name) + '" data-price="' + p.price + '" data-img="' + escapeHTML(p.img) + '">' +
+                '<div class="relative overflow-hidden bg-stone-900 rounded-2xl aspect-[4/5] mb-6 border border-stone-800/30">' +
+                    '<img src="' + escapeHTML(p.img) + '" alt="' + escapeHTML(p.name) + ' coffee beans" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out brightness-90 contrast-105">' +
+                    '<div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/20 to-transparent opacity-80 group-hover:opacity-40 transition-opacity duration-500" aria-hidden="true"></div>' +
+                    '<div class="absolute bottom-4 left-0 w-full px-4 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 md:translate-y-8 group-hover:translate-y-0">' +
+                        '<button class="add-to-cart-btn w-full bg-amber-500 text-stone-900 font-bold py-4 rounded-xl tracking-wider uppercase text-xs hover:bg-amber-400 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300" aria-label="Add ' + escapeHTML(p.name) + ' to cart - $' + p.price + '">Add to Bag - $' + p.price + '</button>' +
+                    '</div>' +
+                '</div>' +
+                '<h3 class="text-2xl font-playfair font-bold text-white mb-1 group-hover:text-amber-500 transition">' + escapeHTML(p.name) + '</h3>' +
+                '<p class="text-stone-400 text-sm">' + escapeHTML(p.notes) + '</p>' +
+            '</li>';
+        }).join('');
+
+        productGrid.addEventListener('click', function(e) {
+            const btn = e.target.closest('.add-to-cart-btn');
+            if (!btn) return;
+            const card = btn.closest('li[data-id]');
+            const product = {
+                id: Number(card.dataset.id),
+                name: card.dataset.name,
+                price: Number(card.dataset.price),
+                img: card.dataset.img
+            };
+
+            cartItems.push(product);
+            persistCart();
+            renderCart();
+
+            cartBadge.classList.add('scale-150');
+            setTimeout(() => cartBadge.classList.remove('scale-150'), 300);
+
+            const original = btn.textContent;
+            btn.textContent = 'Added!';
+            btn.classList.replace('bg-amber-500', 'bg-emerald-500');
+            btn.disabled = true;
+            showToast(product.name + ' added to bag', 'success');
+
+            setTimeout(function() {
+                btn.textContent = original;
+                btn.classList.replace('bg-emerald-500', 'bg-amber-500');
+                btn.disabled = false;
+            }, 2000);
+        });
+
+        const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        document.getElementById('subscribe-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const name = form.elements['name'].value.trim();
+            const email = form.elements['email'].value.trim();
+            if (!name) { showToast('Please enter your full name.', 'error'); form.elements['name'].focus(); return; }
+            if (!EMAIL_RE.test(email)) { showToast('Please enter a valid email address.', 'error'); form.elements['email'].focus(); return; }
+            showToast('Welcome, ' + escapeHTML(name) + '! Check your inbox.', 'success', 4000);
+            form.reset();
+        });
+
+        // Scroll reveal — hero elements get activated on DOMContentLoaded
+        const revealObserver = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(function(entry) {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.1, rootMargin: '200px 0px -40px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(function(el) {
+            revealObserver.observe(el);
+        });
+
+        document.getElementById('year').textContent = new Date().getFullYear();
+        renderCart();
+
+    })();
+    </script>
+</body>
+</html>
